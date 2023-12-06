@@ -256,11 +256,9 @@ def torque(x):  #(no point loads or point moments)
     zed['T'][x] = estimateT
   return zed['T'][x]
 
-def moment_pls():#returns interpolated moment
-  return sp.interpolate.interp1d(x,[momentN(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
+moment_pls =  sp.interpolate.interp1d(x,[momentN(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
   
-def torque_pls():#returns interpolated torque
-  return sp.interpolate.interp1d(x,[torque(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
+torque_pls = sp.interpolate.interp1d(x,[torque(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
 
 ax3.plot(x, [torque(i)*n/1000 for i in x if True], 'b-')
 #ax3.title.set_text('Torque diagram')

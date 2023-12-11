@@ -11,7 +11,7 @@ def stress(y, designindex):
     #bending stress
     print(abs(topweb(0, chord, designindex)-centroid(chord, designindex)), abs(bottomweb(0, chord, designindex)-centroid(chord, designindex)))
     max_z = max(abs(topweb(0, chord, designindex)-centroid(chord, designindex)), abs(bottomweb(0, chord, designindex)-centroid(chord, designindex)))
-    normal_stress = abs(moment_pls(y) * max_z / I(y, designindex)) #Absoluite value for now !!!!!!!!!!!!!!!! must be changed
+    normal_stress = np.abs(moment_pls(y) * max_z / I(y, designindex)) #Absoluite value for now !!!!!!!!!!!!!!!! must be changed
     print(normal_stress)
     #torque shear stress
     # \tau = q/t = T/(2tA_m)

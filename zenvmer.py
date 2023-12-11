@@ -130,22 +130,23 @@ m = sp.interpolate.interp1d(a0[:, 0],
 alpha = np.arcsin(((C_Ld-C_L0)*np.sin(np.deg2rad(10)))/(C_L10-C_L0))
 #GRAPHING GENERAL
 #fig, (ax1, ax2, ax3) = plt.subplots(nrows=3)
-fig = plt.figure(figsize=(6.4,5.2))
-ax1,ax2,ax3 = fig.add_subplot(311,axes_class=AxesZero),fig.add_subplot(312,axes_class=AxesZero),fig.add_subplot(313,axes_class=AxesZero)
+if __name__ == '__main__':
+  fig = plt.figure(figsize=(6.4,5.2))
+  ax1,ax2,ax3 = fig.add_subplot(311,axes_class=AxesZero),fig.add_subplot(312,axes_class=AxesZero),fig.add_subplot(313,axes_class=AxesZero)
 
-for ax in [ax1,ax2,ax3]:
-  for direction in ["xzero", "yzero"]:
-    # adds arrows at the ends of each axis
-    ax.axis[direction].set_axisline_style("-|>")
-    #print(ax)
+  for ax in [ax1,ax2,ax3]:
+    for direction in ["xzero", "yzero"]:
+      # adds arrows at the ends of each axis
+      ax.axis[direction].set_axisline_style("-|>")
+      #print(ax)
 
-    # adds X and Y-axis from the origin
-    ax.axis[direction].set_visible(True)
+      # adds X and Y-axis from the origin
+      ax.axis[direction].set_visible(True)
 
-  for direction in ["left", "right", "bottom", "top"]:
-    # hides borders
-    ax.axis[direction].set_visible(False)
-  ax.grid()
+    for direction in ["left", "right", "bottom", "top"]:
+      # hides borders
+      ax.axis[direction].set_visible(False)
+    ax.grid()
 
 
 dihedral = np.deg2rad(1.3)
@@ -173,15 +174,18 @@ def shearN(x):
   return zed['V'][x]
 
 #drag, lift --mathemagic--> normal force + weight(normal component) --cos(dihedral)--> force normal to the local surface
-ax1.plot(x, [shearN(i)*n/1000 for i in x if True], 'b-')
+[shearN(i)*n/1000 for i in x if True]
+if __name__ == '__main__':
+  ax1.plot(x, [shearN(i)*n/1000 for i in x if True], 'b-')
+  ax1.set_xlabel(r'y, [$m$]')
+  ax1.set_ylabel(r'Internal shear, [$kN$]')
+  ax1.set_xlim(0,14.2)
 v = sp.interpolate.interp1d(list(zed['V'].keys()),
                             list(zed['V'].values()),
                             kind='cubic',
                             fill_value="extrapolate")
 #ax1.title.set_text('Normal shear stress')
-ax1.set_xlabel(r'y, [$m$]')
-ax1.set_ylabel(r'Internal shear, [$kN$]')
-ax1.set_xlim(0,14.2)
+
 
 #-------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------
@@ -193,12 +197,12 @@ def momentN(x):
     zed['M'][x] = estimateM
   return zed['M'][x]
 
-
-ax2.plot(x, [momentN(i)*n/1000 for i in x if True], 'b-')
-#ax2.title.set_text('Moment diagram')
-ax2.set_xlabel(r'y, [$m$]')
-ax2.set_ylabel(r'Internal moment, [$kNm$]')
-ax2.set_xlim(0,14.2)
+if __name__ == '__main__':
+  ax2.plot(x, [momentN(i)*n/1000 for i in x if True], 'b-')
+  #ax2.title.set_text('Moment diagram')
+  ax2.set_xlabel(r'y, [$m$]')
+  ax2.set_ylabel(r'Internal moment, [$kNm$]')
+  ax2.set_xlim(0,14.2)
 
 
 
@@ -259,12 +263,12 @@ def torque(x):  #(no point loads or point moments)
 moment_pls =  sp.interpolate.interp1d(x,[momentN(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
   
 torque_pls = sp.interpolate.interp1d(x,[torque(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
-
-ax3.plot(x, [torque(i)*n/1000 for i in x if True], 'b-')
-#ax3.title.set_text('Torque diagram')
-ax3.set_ylabel(r"Internal torque, [$kNm$]")
-ax3.set_xlabel(r'y, [$m$]')
-ax3.set_xlim(0,14.2)
+if __name__ == '__main__':
+  ax3.plot(x, [torque(i)*n/1000 for i in x if True], 'b-')
+  #ax3.title.set_text('Torque diagram')
+  ax3.set_ylabel(r"Internal torque, [$kNm$]")
+  ax3.set_xlabel(r'y, [$m$]')
+  ax3.set_xlim(0,14.2)
 
 '''
 [torque(i)*n/1000 for i in x if True]
@@ -295,9 +299,11 @@ print(f"maximum torque is {min(zed['T'].values())*n}")
 '''
 #plt.subplots_adjust(hspace=0.5)
 
-plt.subplots_adjust(bottom=0.07,top=0.97,hspace=0.5)
+
 
 if __name__ == '__main__':
+  plt.subplots_adjust(bottom=0.07,top=0.97,hspace=0.5)
   plt.show()
+  #plt.axis()
 
 #no graphing just return interpolated shit

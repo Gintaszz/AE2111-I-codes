@@ -259,6 +259,7 @@ def torque(x):  #(no point loads or point moments)
     estimateT+= thrust*dz() if(x<=(diameter/2)) else 0
     zed['T'][x] = estimateT
   return zed['T'][x]
+shear_pls = sp.interpolate.interp1d(x,[shearN(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
 
 moment_pls =  sp.interpolate.interp1d(x,[momentN(i)*n for i in x if True], kind='cubic', fill_value="extrapolate")
   

@@ -22,10 +22,11 @@ for ax in [ax1,ax2,ax3]:
     ax.axis[direction].set_visible(False)
   ax.grid()
 x = np.linspace(bounds[0], bounds[1], 150)
-ax1.plot(x,[stress(i,0)/sigmaY for i in x if True])
-ax2.plot(x,[stress(i,1)/sigmaY for i in x if True])
-ax3.plot(x,[stress(i,2)/sigmaY for i in x if True])
+ax1.plot(x,[sigmaY/stress(i,0) for i in x if True])
+ax2.plot(x,[sigmaY/stress(i,1) for i in x if True])
+ax3.plot(x,[sigmaY/stress(i,2) for i in x if True])
 
 if __name__ == '__main__':
   plt.subplots_adjust(bottom=0.07,top=0.97,hspace=0.5)
   plt.show()
+

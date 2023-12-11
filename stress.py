@@ -1,15 +1,20 @@
 from zenvmer import shear_pls, moment_pls, torque_pls, bounds
 from main import I, c
-from data import design, C_R, topweb, bottomweb, centroid
+from data import design, C_R, topweb, bottomweb, centroid, airfoilfunc_top, airfoilfunc_bottom
 import numpy as np
 
 
-def stress(y, designindex):
+def stress(y, designindex, skin=False):
     #y= np.linspace(bounds[0], bounds[1], 150)
     chord = c(y)
 
     #bending stress
-    max_z = max(abs(topweb(0, chord, designindex)-centroid(chord, designindex)), abs(bottomweb(0, chord, designindex)-centroid(chord, designindex)))
+    if skin:
+        max_z = max([abs(airfoilfunc_top(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)] +
+                    [abs(airfoilfunc_bottom(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)])
+    else:
+        max_z = max(abs(topweb(0, chord, designindex)-centroid(chord, designindex)), abs(bottomweb(0, chord, designindex)-centroid(chord, designindex)))
+
     normal_stress = np.abs(moment_pls(y) * max_z / I(y, designindex)) #Absoluite value for now !!!!!!!!!!!!!!!! must be changed
     #torque shear stress
     # \tau = q/t = T/(2tA_m)

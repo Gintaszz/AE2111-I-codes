@@ -21,8 +21,9 @@ for ax in [ax1,ax2,ax3]:
     # hides borders
     ax.axis[direction].set_visible(False)
   ax.grid()
-  ax.set_yscale('log')
-x = np.linspace(bounds[0], bounds[1], 150)
+  #ax.set_yscale('log')
+#x = np.linspace(bounds[0], bounds[1], 150)
+x = np.linspace(bounds[0], 7, 150)
 
 ax1.plot(x,[sigmaY/stress(i,0) for i in x if True])
 ax2.plot(x,[sigmaY/stress(i,1) for i in x if True])

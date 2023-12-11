@@ -124,7 +124,7 @@ def J(x, designindex): #Torsional constant calculation = (4tA^2)/s
 
 
 if __name__ == "__main__":
-    DESIGNNUM = 0 #0, 1, or 2
+    DESIGNNUM = 1 #0, 1, or 2
     #-----------------------Integration-------------------------
     stepsint = 100
 

@@ -40,14 +40,15 @@ if __name__ == "__main__":
     columnmargin = [columnmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
     globalmargin = [globalmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
 
-    if min(skinmargin) < 1: print(f"\033[1;31;40m Failed: Skin buckling \033[0m: {min(skinmargin)}")
-    if min(webmargin) < 1: print(f"\033[1;31;40m Failed: Web buckling \033[0m: {min(webmargin)}")
-    if min(columnmargin) < 1: print(f"\033[1;31;40m Failed: Column buckling \033[0m: {min(columnmargin)}")
-    if min(globalmargin) < 1: print(f"\033[1;31;40m Failed: Global buckling \033[0m: {min(globalmargin)}")
+    bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'global': globalmargin}
 
-    plt.plot(spanarray, skinmargin)
-    plt.plot(spanarray, webmargin)
-    plt.plot(spanarray, columnmargin)
-    plt.plot(spanarray, globalmargin)
+    for mode, modelist in bucklingmargins.items():
+        if min(modelist) < 1:
+            print(f"\033[91m Failed: {mode} buckling \033[0m: {min(modelist)}")
+        else:
+            print(f"\033[92m Success: {mode} buckling \033[0m: {min(modelist)}")
+        
+        plt.plot(spanarray, modelist)
+
     plt.ylim(0, 10)
     plt.show()

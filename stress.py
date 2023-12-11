@@ -3,8 +3,9 @@ from main import I, c
 from data import design, C_R, topweb, bottomweb, centroid, airfoilfunc_top, airfoilfunc_bottom, SEMISPAN
 import numpy as np
 import matplotlib.pyplot as plt
+from functools import cache
 
-
+@cache
 def stress(y, designindex):
     #y= np.linspace(bounds[0], bounds[1], 150)
     chord = c(y)

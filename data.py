@@ -88,10 +88,10 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
 designparameters = {'area stringer': [2*10**-4, 2*10**-4, 2*10**-4], 
                     't spar': [0.01, 0.02, 0.02], 
                     't web': [0.001, 0.01, 0.0005], 
-                    'front spar x': [0.25, 0.25, 0.25], 
+                    'front spar x': [0.25, 0.3, 0.25], 
                     'back spar x': [0.67, 0.67, 0.67], 
                     'list stringers': [[24, 18, 14, 10, 6, 0],
-                                       [24, 14, 10, 6, 0],
+                                       [24*2, 0, 0, 0, 0],
                                        [24, 18, 14, 10, 6, 0]],
               }
 

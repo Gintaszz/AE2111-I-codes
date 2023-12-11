@@ -305,6 +305,7 @@ print(f"maximum torque is {min(zed['T'].values())*n}")
 if __name__ == '__main__':
   plt.subplots_adjust(bottom=0.07,top=0.97,hspace=0.5)
   plt.show()
+  print([shearN(i)*n for i in x if True])
   #plt.axis()
 
 #no graphing just return interpolated shit

@@ -29,7 +29,7 @@ def stress(y, designindex, skin=False):
         shear_stress_web = shearflow_torsion/design['t web'][designindex]
         #Max shear always going to be at minimum thickness --> web (top and bottom)
         #Shear stress due to shear force at corner of wingbox assuming square geometry
-        shearflow_shear_corner = -shear_pls(y)/I(y, designindex) * design['t web'][designindex] * design['spar distance x'][designindex] * chord
+        shearflow_shear_corner = -shear_pls(y)/I(y, designindex) * design['t web'][designindex] * design['spar distance x'][designindex] * chord/2 * ((topweb(0, 1, designindex) + topweb(design['spar distance x'][designindex]*chord, 1, designindex))/2)
 
         shear_stress = shear_stress_web + shearflow_shear_corner
 

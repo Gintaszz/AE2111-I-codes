@@ -4,7 +4,7 @@ from mpl_toolkits.axisartist.axislines import AxesZero
 import matplotlib.pyplot as plt
 from zenvmer import bounds
 
-sigmaY = 276000000.0
+sigmaY = 276000000.0 #270MPaq
 fig = plt.figure(figsize=(6.4,5.2))
 ax1,ax2,ax3 = fig.add_subplot(311,axes_class=AxesZero),fig.add_subplot(312,axes_class=AxesZero),fig.add_subplot(313,axes_class=AxesZero)
 
@@ -23,7 +23,7 @@ for ax in [ax1,ax2,ax3]:
   ax.grid()
   #ax.set_yscale('log')
 #x = np.linspace(bounds[0], bounds[1], 150)
-x = np.linspace(bounds[0], 7, 150)
+x = np.linspace(bounds[0], 11, 150)
 
 ax1.plot(x,[sigmaY/stress(i,0) for i in x if True])
 ax2.plot(x,[sigmaY/stress(i,1) for i in x if True])

@@ -85,13 +85,13 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
                 [airfoil_data_bottom[i+1] for i in np.arange(0, len(airfoil_data_bottom), 2)]
                 )
 
-designparameters = {'area stringer': [5*10**-5, 5*10**-5, 5*10**-5], 
-                    't spar': [0.01, 0.01, 0.02], 
-                    't web': [0.001, 0.007, 0.0005], 
+designparameters = {'area stringer': [2*10**-4, 2*10**-4, 2*10**-4], 
+                    't spar': [0.01, 0.02, 0.02], 
+                    't web': [0.001, 0.01, 0.0005], 
                     'front spar x': [0.25, 0.3, 0.25], 
-                    'back spar x': [0.67, 0.6, 0.67], 
+                    'back spar x': [0.67, 0.67, 0.67], 
                     'list stringers': [[24, 18, 14, 10, 6, 0],
-                                       [18, 14, 10, 6, 0],
+                                       [24*2, 0, 0, 0, 0],
                                        [24, 18, 14, 10, 6, 0]],
               }
 

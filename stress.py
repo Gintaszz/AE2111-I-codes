@@ -3,18 +3,17 @@ from main import I, c
 from data import design, C_R, topweb, bottomweb, centroid, airfoilfunc_top, airfoilfunc_bottom, SEMISPAN
 import numpy as np
 import matplotlib.pyplot as plt
+from functools import cache
 
-
-def stress(y, designindex, skin=False):
+@cache
+def stress(y, designindex):
     #y= np.linspace(bounds[0], bounds[1], 150)
     chord = c(y)
 
     #bending stress
-    if skin:
-        max_z = max([abs(airfoilfunc_top(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)] +
-                    [abs(airfoilfunc_bottom(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)])
-    else:
-        max_z = max(abs(topweb(0, chord, designindex)-centroid(chord, designindex)), abs(bottomweb(0, chord, designindex)-centroid(chord, designindex)))
+
+    max_z = max([abs(airfoilfunc_top(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)] +
+                [abs(airfoilfunc_bottom(x)*chord-centroid(chord, designindex)) for x in np.linspace(0, 1, 100)])
 
     normal_stress = np.abs(moment_pls(y) * max_z / I(y, designindex)) #Absoluite value for now !!!!!!!!!!!!!!!! must be changed
 
@@ -31,7 +30,11 @@ def stress(y, designindex, skin=False):
         #Shear stress due to shear force at corner of wingbox assuming square geometry
         shearflow_shear_corner = -shear_pls(y)/I(y, designindex) * design['t web'][designindex] * design['spar distance x'][designindex] * chord/2 * ((topweb(0, 1, designindex) + topweb(design['spar distance x'][designindex]*chord, 1, designindex))/2)
 
-        shear_stress = shear_stress_web + shearflow_shear_corner
+    shear_stress = shear_stress_web + shearflow_shear_corner
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    shear_stress = 0 #assume no shear in skin
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
     #mohrs circle magic, convert into equivalent normal stress
     mohrs_radius = np.sqrt((normal_stress/2)**2 + shear_stress**2)
@@ -39,8 +42,9 @@ def stress(y, designindex, skin=False):
 
     return equ_normal
 
-plotlist = [stress(y, 1, skin=False) for y in np.arange(0, SEMISPAN, 0.1)]
-print(max(plotlist))
+if __name__ == "__main__":
+    plotlist = [stress(y, 1) for y in np.arange(0, SEMISPAN, 0.1)]
+    print(max(plotlist))
 
-plt.plot(np.arange(0, SEMISPAN, 0.1), plotlist)
-plt.show()
+    plt.plot(np.arange(0, SEMISPAN, 0.1), plotlist)
+    plt.show()

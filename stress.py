@@ -26,13 +26,8 @@ def stress(y, designindex):
     shear_stress_web = shearflow_torsion/design['t web'][designindex]
     #Max shear always going to be at minimum thickness --> web (top and bottom)
     #Shear stress due to shear force at corner of wingbox assuming square geometry
-    shearflow_shear_corner = -shear_pls(y)/I(y, designindex) * design['t web'][designindex] * design['spar distance x'][designindex] * chord
 
-    shear_stress = shear_stress_web + shearflow_shear_corner
-
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    shear_stress = 0 #assume no shear in skin
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    shear_stress = shear_stress_web
 
     #mohrs circle magic, convert into equivalent normal stress
     mohrs_radius = np.sqrt((normal_stress/2)**2 + shear_stress**2)

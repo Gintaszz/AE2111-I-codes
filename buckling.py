@@ -2,8 +2,8 @@
 # Web, Skin, Column, Global Buckling
 import numpy as np
 from data import design, C_R, topweb, bottomweb, centroid, c, SEMISPAN, E
-from main import Izz
-from stress import stress
+from main import I
+from stress import stress, max_stress_stringer
 import matplotlib.pyplot as plt
 
 def skinmaxstress(y, designindex, safetyfactor = 1):
@@ -25,30 +25,42 @@ def webmaxstress(y, designindex, safetyfactor = 1):
     return sigma/safetyfactor
 
 def columnmaxstress(y, designindex, safetyfactor = 1):
-    t_stringer = 0.001 # 1mm
-    A_stringer = design['area stringer'][designindex]
-    b_stringer = A_stringer / (2 * t_stringer)
-    I_stringer = 4/3 * (t_stringer * b_stringer**3)
-    L_stringer = SEMISPAN #Losnges stringer is semispan long
+    t = 0.005 # 10  mm
+    A = design['area stringer'][designindex]
+    b = (A + t**2) / (2 * t)
+
+    ybar = (b**2+b*t-t**2)/(4*b-2*t)
+    
+    I_stringer = 1/12 * b**3 * t + (b/2-ybar)**2*b*t +\
+             1/12 * t**3 * (b-t) + (t/2-ybar)**2*(b-t)*t
+    
+    L_stringer = SEMISPAN #Longest stringer is semispan long
     K = 0.25
 
-    sigma = K * np.pi**2 * E * Izz(y) / (L_stringer* A_stringer**2)
+    sigma = K * np.pi**2 * E * I_stringer / (L_stringer**2 * A)
+
     return sigma/safetyfactor
 
-def globalmaxstress(y, designindex, safetyfactor = 1):
-    sigma = 0
+def compressivestress(y, designindex, safetyfactor = 1):
+    sigma = 310 * 10**6 # Maximum tensile strength of AL6061-T6
     return sigma/safetyfactor
+
 
 if __name__ == "__main__":
     designindex = 1
     spanarray = np.arange(0, SEMISPAN, 0.1)
 
     skinmargin = [skinmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
-    webmargin = [webmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
-    columnmargin = [columnmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
-    globalmargin = [globalmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
 
-    bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'global': globalmargin}
+    webmargin = [webmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
+
+    sigmamaxcolumn = columnmaxstress(0, designindex)
+    columnmargin = [sigmamaxcolumn/max_stress_stringer(y, designindex) for y in spanarray]
+
+    sigmamaxcompressive = compressivestress(0, designindex)
+    compressivemargin = [sigmamaxcompressive/stress(y, designindex) for y in spanarray]
+
+    bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'compressivestress': compressivemargin}
 
     for mode, modelist in bucklingmargins.items():
         if min(modelist) < 1:
@@ -58,5 +70,6 @@ if __name__ == "__main__":
         
         plt.plot(spanarray, modelist)
 
-    plt.ylim(0, 10)
+    plt.yscale("log")
+    plt.ylim(10**-2, 10**4)
     plt.show()

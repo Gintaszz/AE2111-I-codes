@@ -30,11 +30,7 @@ def stress(y, designindex):
         #Shear stress due to shear force at corner of wingbox assuming square geometry
         shearflow_shear_corner = -shear_pls(y)/I(y, designindex) * design['t web'][designindex] * design['spar distance x'][designindex] * chord/2 * ((topweb(0, 1, designindex) + topweb(design['spar distance x'][designindex]*chord, 1, designindex))/2)
 
-    shear_stress = shear_stress_web + shearflow_shear_corner
-
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    shear_stress = 0 #assume no shear in skin
-    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    shear_stress = shear_stress_web
 
     #mohrs circle magic, convert into equivalent normal stress
     mohrs_radius = np.sqrt((normal_stress/2)**2 + shear_stress**2)

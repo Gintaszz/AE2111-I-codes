@@ -12,6 +12,9 @@ DIHEDRAL = 1.3 * np.pi / 180
 def c(x):
     return C_R - C_R*(1-TAPER)/(SEMISPAN) * x
 
+def ctoy(c):
+    return (1-c/C_R)*SEMISPAN/(1-TAPER)
+
 n = 2.64
 
 E = 68.9*10**9 #Pa
@@ -85,17 +88,21 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
                 [airfoil_data_bottom[i+1] for i in np.arange(0, len(airfoil_data_bottom), 2)]
                 )
 
-designparameters = {'area stringer': [2*10**-4, 4*10**-4, 2*10**-4], 
-                    't spar': [0.01, 0.02, 0.02], 
-                    't web': [0.001, 0.01, 0.0005], 
+designparameters = {'area stringer': [4*10**-4, 4*10**-4, 2*10**-4], 
+                    't spar': [0.03, 0.03, 0.03], 
+                    't web': [[0.02, 0.015, 0.0],
+                              [0.02, 0.02, 0.02],
+                              [0.02, 0.02, 0.02],
+                              ], 
                     'front spar x': [0.25, 0.3, 0.25], 
                     'back spar x': [0.67, 0.67, 0.67], 
-                    'list stringers': [[24, 18, 14, 10, 6, 0],
+                    'list stringers': [[30, 24, 18, 12, 6, 0],
                                        [24, 18, 14, 10, 6, 0],
                                        [24, 18, 14, 10, 6, 0]],
               }
 
-designproperties = {'span list': [],
+designproperties = {'span list stringers': [],
+                    'span list web': [],
                     'spar distance x': [],
                     'front spar to root chord': [],
                     'back spar to root chord': [],
@@ -103,9 +110,13 @@ designproperties = {'span list': [],
 
 #Create design parameters dictionary
 for designindex in range(3):
-    designproperties['span list'].append(\
+    designproperties['span list stringers'].append(\
         [i*SEMISPAN/(len(designparameters['list stringers'][designindex])-1)\
         for i in range(len(designparameters['list stringers'][designindex]))])
+    
+    designproperties['span list web'].append(\
+        [i*SEMISPAN/(len(designparameters['t web'][designindex])-1)\
+        for i in range(len(designparameters['t web'][designindex]))])
     
     designproperties['spar distance x'].append(designparameters['back spar x'][designindex] - designparameters['front spar x'][designindex])
     
@@ -117,6 +128,10 @@ for designindex in range(3):
 
 #Merge dictionaries into 1 named design
 design = {**designparameters, **designproperties}
+
+def tweb(x, designindex):
+    return sp.interpolate.interp1d(design['span list web'][designindex], design['t web'][designindex], kind="previous",fill_value="extrapolate")(x)
+
 
 def topweb(x, c, designnum): #Equation of top web from geometry chord as datum
     frontx, fronty = design['front spar x'][designnum], airfoilfunc_top(design['front spar x'][designnum])
@@ -134,7 +149,8 @@ def bottomweb(x, c, designnum): #Equation of top web from geometry chord as datu
 
 def centroid(c, designnum):
     t_spar = design['t spar'][designnum]
-    t_web = design['t web'][designnum]
+    t_web = tweb(ctoy(c), designindex)
+
     spardist_over_chord = design['back spar x'][designnum] - design['front spar x'][designnum]
 
     centroidfrontsparcr = (airfoilfunc_top(design['front spar x'][designnum]) + 

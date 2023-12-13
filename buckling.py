@@ -1,7 +1,7 @@
 # Maximum allowable stress as a function of span
 # Web, Skin, Column, Global Buckling
 import numpy as np
-from data import design, C_R, topweb, bottomweb, centroid, c, SEMISPAN, E
+from data import design, C_R, topweb, bottomweb, centroid, c, SEMISPAN, E, tweb
 from main import I
 from stress import stress, max_stress_stringer
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ def skinmaxstress(y, designindex, safetyfactor = 1):
     b = spardist
     
     k_c = 7
-    t = design['t web'][designindex] # [m]
+    t = tweb(y, designindex) # [m]
 
     poission = 1/3
     sigma = np.pi**2 * k_c * E * (t/b)**2 / (12*(1-poission**2))
@@ -25,7 +25,7 @@ def webmaxstress(y, designindex, safetyfactor = 1):
     return sigma/safetyfactor
 
 def columnmaxstress(y, designindex, safetyfactor = 1):
-    t = 0.005 # 10  mm
+    t = 0.005 # 5  mm
     A = design['area stringer'][designindex]
     b = (A + t**2) / (2 * t)
 
@@ -34,7 +34,7 @@ def columnmaxstress(y, designindex, safetyfactor = 1):
     I_stringer = 1/12 * b**3 * t + (b/2-ybar)**2*b*t +\
              1/12 * t**3 * (b-t) + (t/2-ybar)**2*(b-t)*t
     
-    L_stringer = SEMISPAN #Longest stringer is semispan long
+    L_stringer  = 0.6 #Rib Spacing
     K = 0.25
 
     sigma = K * np.pi**2 * E * I_stringer / (L_stringer**2 * A)
@@ -47,7 +47,7 @@ def compressivestress(y, designindex, safetyfactor = 1):
 
 
 if __name__ == "__main__":
-    designindex = 1
+    designindex = 0
     spanarray = np.arange(0, SEMISPAN, 0.1)
 
     skinmargin = [skinmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]

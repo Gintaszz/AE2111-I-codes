@@ -1,5 +1,5 @@
 from data import design, moment, torque, SPAN, SEMISPAN, C_R, TAPER, DIHEDRAL, E, G, \
-                    c, centroid, topweb, bottomweb, airfoilfunc_top, airfoilfunc_bottom
+                    c, centroid, topweb, bottomweb, airfoilfunc_top, airfoilfunc_bottom, tweb
 
 import numpy as np
 import scipy as sp
@@ -7,8 +7,7 @@ from matplotlib import pyplot as plt
 
 def n_stringers(x, designindex): 
     #Interpolation of number of stringers list and span.
-    return sp.interpolate.interp1d(design['span list'][designindex], design['list stringers'][designindex], kind="previous",fill_value="extrapolate")(x)
-
+    return sp.interpolate.interp1d(design['span list stringers'][designindex], design['list stringers'][designindex], kind="previous",fill_value="extrapolate")(x)
 
 def M(x): #From WP4.1
     return moment(x)
@@ -24,7 +23,8 @@ def I(y, designindex): #Moment of inertia calculation function (Ixx)
     frontsparlength = chord * design['front spar to root chord'][designindex]/C_R
     backsparlength = chord * design['back spar to root chord'][designindex]/C_R
     t_spar = design['t spar'][designindex]
-    t_web = design['t web'][designindex]
+    t_web = tweb(y, designindex)
+
     centroidlocal = centroid(chord, designindex)
 
     centroidfrontspar = (airfoilfunc_top(design['front spar x'][designindex]) + 
@@ -64,7 +64,7 @@ def Izz(y, designindex):
     frontsparlength = chord * design['front spar to root chord'][designindex]/C_R
     backsparlength = chord * design['back spar to root chord'][designindex]/C_R
     t_spar = design['t spar'][designindex]
-    t_web = design['t web'][designindex]
+    t_web = tweb(y, designindex)
     cx, cz = centroid(chord, designindex)
 
     centroidfrontspar = (airfoilfunc_top(design['front spar x'][designindex]) + 
@@ -111,7 +111,7 @@ def Ixz(y, designindex):
 
 def J(x, designindex): #Torsional constant calculation = (4tA^2)/s
     t_spar = design['t spar'][designindex]
-    t_web = design['t web'][designindex]
+    t_web = tweb(x, designindex)
     chord = c(x)
 
     front_spar_length = design['front spar to root chord'][designindex] * chord / C_R

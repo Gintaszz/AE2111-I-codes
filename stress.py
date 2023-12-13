@@ -1,6 +1,6 @@
 from zenvmer import shear_pls, moment_pls, torque_pls, bounds
 from main import I, c
-from data import design, C_R, topweb, bottomweb, centroid, airfoilfunc_top, airfoilfunc_bottom, SEMISPAN
+from data import design, C_R, topweb, bottomweb, centroid, airfoilfunc_top, airfoilfunc_bottom, SEMISPAN, tweb
 import numpy as np
 import matplotlib.pyplot as plt
 from functools import cache
@@ -23,7 +23,7 @@ def stress(y, designindex):
     #Area of trapezium
     totalarea = (design['front spar to root chord'][designindex]/C_R + design['back spar to root chord'][designindex]/C_R)*chord/2 * design['spar distance x'][designindex]*chord 
     shearflow_torsion = torque_pls(y)/(2*totalarea)
-    shear_stress_web = shearflow_torsion/design['t web'][designindex]
+    shear_stress_web = shearflow_torsion/tweb(y, designindex)
     #Max shear always going to be at minimum thickness --> web (top and bottom)
     #Shear stress due to shear force at corner of wingbox assuming square geometry
 

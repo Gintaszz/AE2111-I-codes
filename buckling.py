@@ -2,6 +2,7 @@
 # Web, Skin, Column, Global Buckling
 import numpy as np
 from data import design, C_R, topweb, bottomweb, centroid, c, SEMISPAN, E
+from main import Izz
 from stress import stress
 import matplotlib.pyplot as plt
 
@@ -24,7 +25,14 @@ def webmaxstress(y, designindex, safetyfactor = 1):
     return sigma/safetyfactor
 
 def columnmaxstress(y, designindex, safetyfactor = 1):
-    sigma = 0
+    t_stringer = 0.001 # 1mm
+    A_stringer = design['area stringer'][designindex]
+    b_stringer = A_stringer / (2 * t_stringer)
+    I_stringer = 4/3 * (t_stringer * b_stringer**3)
+    L_stringer = SEMISPAN #Losnges stringer is semispan long
+    K = 0.25
+
+    sigma = K * np.pi**2 * E * Izz(y) / (L_stringer* A_stringer**2)
     return sigma/safetyfactor
 
 def globalmaxstress(y, designindex, safetyfactor = 1):

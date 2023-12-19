@@ -46,31 +46,35 @@ def compressivestress(y, designindex, safetyfactor = 1):
 
 
 if __name__ == "__main__":
-    designindex = 2
-    spanarray = np.arange(0, SEMISPAN, 0.1)
 
-    skinmargin = [skinmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
+    for designindex in [0, 1, 2]:
+        print(f"Design {designindex}")
 
-    webmargin = [webmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
+        spanarray = np.arange(0, SEMISPAN, 0.1)
 
-    sigmamaxcolumn = columnmaxstress(0, designindex)
-    columnmargin = [sigmamaxcolumn/max_stress_stringer(y, designindex) for y in spanarray]
+        skinmargin = [skinmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
 
-    sigmamaxcompressive = compressivestress(0, designindex)
-    compressivemargin = [sigmamaxcompressive/stress(y, designindex) for y in spanarray]
+        webmargin = [webmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
 
-    bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'compressivestress': compressivemargin}
+        sigmamaxcolumn = columnmaxstress(0, designindex)
+        columnmargin = [sigmamaxcolumn/max_stress_stringer(y, designindex) for y in spanarray]
 
-    for mode, modelist in bucklingmargins.items():
-        if min(modelist) < 1.5:
-            print(f"\033[91m Failed: {mode} buckling \033[0m: {min(modelist)}")
-        else:
-            print(f"\033[92m Success: {mode} buckling \033[0m: {min(modelist)}")
+        sigmamaxcompressive = compressivestress(0, designindex)
+        compressivemargin = [sigmamaxcompressive/stress(y, designindex) for y in spanarray]
+
+        bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'compressivestress': compressivemargin}
+
+        for mode, modelist in bucklingmargins.items():
+            if min(modelist) < 1.5:
+                print(f"\033[91mFailed: {mode} buckling \033[0m: {min(modelist)}")
+            else:
+                print(f"\033[92mSuccess: {mode} buckling \033[0m: {min(modelist)}")
+            
+            plt.plot(spanarray, modelist)
         
-        plt.plot(spanarray, modelist)
+        plt.axhline(1.5, color = 'r', linestyle = ':', label = 'Limit')
+        plt.yscale("log")
+        plt.ylim(10**-2, 10**4)
+        plt.grid()
     
-    plt.axhline(1.5, color = 'r', linestyle = ':', label = 'Limit')
-    plt.yscale("log")
-    plt.ylim(10**-2, 10**4)
-    plt.grid()
-    plt.show()
+        plt.show()

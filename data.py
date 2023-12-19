@@ -87,18 +87,18 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
                 [airfoil_data_bottom[i+1] for i in np.arange(0, len(airfoil_data_bottom), 2)]
                 )
 
-designparameters = {'area stringer': [4*10**-4, 4*10**-4, 2*10**-4], 
-                    't spar': [0.03, 0.045, 0.04], 
-                    't web': [[0.02, 0.016, 0.012, 0.008, 0.0], # Last number not considered so only indexes [:-1]
-                              [0.018, 0.014, 0.010, 0.008, 0.0],
-                              [0.02, 0.016, 0.012, 0.008, 0.0]], 
-                    't stringers': [0.005, 0.005, 0.0025],
+designparameters = {'area stringer': [4*10**-4, 4*10**-4, 2.8*10**-4], 
+                    't spar': [0.03, 0.035, 0.03], 
+                    't web': [[0.023, 0.019, 0.015, 0.012, 0.008, 0.0], # Last number not considered so only indexes [:-1]
+                              [0.021, 0.017, 0.013, 0.010, 0.0],
+                              [0.023, 0.019, 0.015, 0.012, 0.008, 0.0]], 
+                    't stringers': [0.004, 0.005, 0.003],
                     'front spar x': [0.25, 0.30, 0.25], 
                     'back spar x': [0.67, 0.67, 0.67], 
                     'list stringers': [[30, 24, 18, 12, 6, 0],
                                        [30, 24, 18, 12, 6, 0],
-                                       [44, 30, 20, 10, 0]],
-                    'rib spacing': [0.6, 0.6, 0.6]
+                                       [40, 32, 24, 16, 8, 0]],
+                    'rib spacing': [0.6, 0.5, 0.5]
               }
 
 designproperties = {'span list stringers': [],
@@ -136,6 +136,16 @@ def n_stringers(x, designindex):
     #Interpolation of number of stringers list and span.
     return sp.interpolate.interp1d(design['span list stringers'][designindex], design['list stringers'][designindex], kind="previous",fill_value="extrapolate")(x)
 
+if __name__ == '__main__':
+    spanplotlist = np.arange(0, SEMISPAN, 0.01)
+    for i in [0, 1, 2]:
+        fig, axs = plt.subplots(2)
+        fig.suptitle(f"Design = {i}")
+        axs[0].set_title('Skin Thickness')
+        axs[0].plot(spanplotlist, [tweb(x, i) for x in spanplotlist])
+        axs[1].set_title('Number Stringers')
+        axs[1].plot(spanplotlist, [n_stringers(x, i) for x in spanplotlist])
+    plt.show()
 
 def topweb(x, c, designnum): #Equation of top web from geometry chord as datum
     frontx, fronty = design['front spar x'][designnum], airfoilfunc_top(design['front spar x'][designnum])

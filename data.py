@@ -8,7 +8,6 @@ C_R = 3.13
 TAPER = 0.335
 DIHEDRAL = 1.3 * np.pi / 180
 
-
 def c(x):
     return C_R - C_R*(1-TAPER)/(SEMISPAN) * x
 
@@ -89,16 +88,17 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
                 )
 
 designparameters = {'area stringer': [4*10**-4, 4*10**-4, 2*10**-4], 
-                    't spar': [0.03, 0.03, 0.03], 
-                    't web': [[0.02, 0.015, 0.0],
-                              [0.02, 0.02, 0.02],
-                              [0.02, 0.02, 0.02],
-                              ], 
-                    'front spar x': [0.25, 0.3, 0.25], 
+                    't spar': [0.03, 0.045, 0.04], 
+                    't web': [[0.02, 0.016, 0.012, 0.008, 0.0], # Last number not considered so only indexes [:-1]
+                              [0.018, 0.014, 0.010, 0.008, 0.0],
+                              [0.02, 0.016, 0.012, 0.008, 0.0]], 
+                    't stringers': [0.005, 0.005, 0.0025],
+                    'front spar x': [0.25, 0.30, 0.25], 
                     'back spar x': [0.67, 0.67, 0.67], 
                     'list stringers': [[30, 24, 18, 12, 6, 0],
-                                       [24, 18, 14, 10, 6, 0],
-                                       [24, 18, 14, 10, 6, 0]],
+                                       [30, 24, 18, 12, 6, 0],
+                                       [44, 30, 20, 10, 0]],
+                    'rib spacing': [0.6, 0.6, 0.6]
               }
 
 designproperties = {'span list stringers': [],
@@ -127,10 +127,14 @@ for designindex in range(3):
                                                          airfoilfunc_bottom(designparameters['back spar x'][designindex])) * C_R)
 
 #Merge dictionaries into 1 named design
-design = {**designparameters, **designproperties}
+design = designparameters | designproperties
 
 def tweb(x, designindex):
     return sp.interpolate.interp1d(design['span list web'][designindex], design['t web'][designindex], kind="previous",fill_value="extrapolate")(x)
+
+def n_stringers(x, designindex): 
+    #Interpolation of number of stringers list and span.
+    return sp.interpolate.interp1d(design['span list stringers'][designindex], design['list stringers'][designindex], kind="previous",fill_value="extrapolate")(x)
 
 
 def topweb(x, c, designnum): #Equation of top web from geometry chord as datum
@@ -179,6 +183,19 @@ if __name__ == '__main__':
     fig, axs = plt.subplots(3)
 
     for designindex in range(len(design['front spar x'])):
+
+        t = design['t stringers'][designindex]
+        A = design['area stringer'][designindex]
+        b = (A + t**2) / (2 * t)
+        print(f"Stringer Sizing {designindex}: \nb = {b} \nt = {t}")
+
+        # Check if stringers are too large to fit on the skin
+        for y in np.arange(0, SEMISPAN, 0.01):
+            if (b * n_stringers(y, designindex)/2) > design['spar distance x'][designindex]*c(y):
+                print("Incompatible design stringers too large")
+                print(y, designindex)
+                break
+            
         axs[designindex].set_title(f'Design {designindex+1}')
         axs[designindex].plot(np.arange(0, 1, 0.001), [airfoilfunc_top(x) for x in np.arange(0, 1, 0.001)], color = 'r')
         axs[designindex].plot(np.arange(0, 1, 0.001), [airfoilfunc_bottom(x) for x in np.arange(0, 1, 0.001)], color = 'r')
@@ -187,9 +204,11 @@ if __name__ == '__main__':
         axs[designindex].plot(sampling, [topweb(x - design['front spar x'][designindex], 1, designindex) for x in sampling], color = 'b')
         axs[designindex].plot(sampling, [bottomweb(x - design['front spar x'][designindex], 1, designindex) for x in sampling], color = 'b')
         axs[designindex].vlines(design['front spar x'][designindex], ymin = bottomweb(0, 1, designindex), ymax = topweb(0, 1, designindex), color = 'b')
-        axs[designindex].vlines(design['back spar x'][designindex], ymin = bottomweb(design['spar distance x'][designindex], 1, designindex), ymax = topweb(design['spar distance x'][designindex], 1, designindex), color = 'b')
+        axs[designindex].vlines(design['back spar x'][designindex], ymin = bottomweb(design['spar distance x'][designindex], 1, designindex),
+                                 ymax = topweb(design['spar distance x'][designindex], 1, designindex), color = 'b')
         axs[designindex].axhline(centroid(1, designindex), color = 'g')
         axs[designindex].axis('equal')
+
 
     plt.show()
 

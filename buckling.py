@@ -1,8 +1,7 @@
 # Maximum allowable stress as a function of span
 # Web, Skin, Column, Global Buckling
 import numpy as np
-from data import design, C_R, topweb, bottomweb, centroid, c, SEMISPAN, E, tweb
-from main import I
+from data import design, C_R, c, SEMISPAN, E, tweb
 from stress import stress, max_stress_stringer
 import matplotlib.pyplot as plt
 
@@ -25,7 +24,7 @@ def webmaxstress(y, designindex, safetyfactor = 1):
     return sigma/safetyfactor
 
 def columnmaxstress(y, designindex, safetyfactor = 1):
-    t = 0.005 # 5  mm
+    t = design['t stringers'][designindex]
     A = design['area stringer'][designindex]
     b = (A + t**2) / (2 * t)
 
@@ -34,7 +33,7 @@ def columnmaxstress(y, designindex, safetyfactor = 1):
     I_stringer = 1/12 * b**3 * t + (b/2-ybar)**2*b*t +\
              1/12 * t**3 * (b-t) + (t/2-ybar)**2*(b-t)*t
     
-    L_stringer  = 0.6 #Rib Spacing
+    L_stringer  = design['rib spacing'][designindex] #Rib Spacing
     K = 0.25
 
     sigma = K * np.pi**2 * E * I_stringer / (L_stringer**2 * A)
@@ -47,7 +46,7 @@ def compressivestress(y, designindex, safetyfactor = 1):
 
 
 if __name__ == "__main__":
-    designindex = 0
+    designindex = 2
     spanarray = np.arange(0, SEMISPAN, 0.1)
 
     skinmargin = [skinmaxstress(y, designindex)/stress(y, designindex) for y in spanarray]
@@ -63,13 +62,15 @@ if __name__ == "__main__":
     bucklingmargins = {'skin': skinmargin, 'web': webmargin, 'column': columnmargin, 'compressivestress': compressivemargin}
 
     for mode, modelist in bucklingmargins.items():
-        if min(modelist) < 1:
+        if min(modelist) < 1.5:
             print(f"\033[91m Failed: {mode} buckling \033[0m: {min(modelist)}")
         else:
             print(f"\033[92m Success: {mode} buckling \033[0m: {min(modelist)}")
         
         plt.plot(spanarray, modelist)
-
+    
+    plt.axhline(1.5, color = 'r', linestyle = ':', label = 'Limit')
     plt.yscale("log")
     plt.ylim(10**-2, 10**4)
+    plt.grid()
     plt.show()

@@ -1,13 +1,9 @@
 from data import design, moment, torque, SPAN, SEMISPAN, C_R, TAPER, DIHEDRAL, E, G, \
-                    c, centroid, topweb, bottomweb, airfoilfunc_top, airfoilfunc_bottom, tweb
+                    c, centroid, topweb, bottomweb, airfoilfunc_top, airfoilfunc_bottom, tweb, n_stringers
 
 import numpy as np
 import scipy as sp
 from matplotlib import pyplot as plt
-
-def n_stringers(x, designindex): 
-    #Interpolation of number of stringers list and span.
-    return sp.interpolate.interp1d(design['span list stringers'][designindex], design['list stringers'][designindex], kind="previous",fill_value="extrapolate")(x)
 
 def M(x): #From WP4.1
     return moment(x)
@@ -124,7 +120,8 @@ def J(x, designindex): #Torsional constant calculation = (4tA^2)/s
 
 
 if __name__ == "__main__":
-    DESIGNNUM = 1 #0, 1, or 2
+    
+    DESIGNNUM = 0
     #-----------------------Integration-------------------------
     stepsint = 100
 

@@ -197,6 +197,37 @@ def centroid(c, designnum):
     cen = (frontsparcontr + backsparcontr + topwebcentcontr + bottomwebcentcontr)/(total_area)
     return cen * c
 
+def mass(designindex): #Returns the weight of one wing
+    rho=2700#kg/m^3
+    weight=0
+    #The Vol of stringers:
+    for i in range(len(designparameters['list stringers'])):
+        weight+=designparameters['area stringer'][designindex]*designproperties['span list stringers'][designindex][i]*designparameters['list stringers'][designindex][i]
+    print(f'(di={designindex})The weight of only the stringers is {weight*rho}')
+    
+    #The Vol of spars
+    #t(const) * h(pos)(y) * L(sweep and pos)
+    #could be integrated in parameter form on paper, but I cant be bothered
+    #L(sweep and pos) can be just taken as semispan with integration as the chord is parallel to flow so  the L taken must be perpendicular??
+    k1=(airfoilfunc_top(designparameters['front spar x'][designindex]) - airfoilfunc_bottom(designparameters['front spar x'][designindex]))
+    k2=(airfoilfunc_top(designparameters['back spar x'][designindex]) - airfoilfunc_bottom(designparameters['back spar x'][designindex]))
+    #print(f'(di={designindex}) the spar heights at root are {[k1*C_R,k2*C_R]}')
+    spar, errorg = sp.integrate.quad(lambda x: designparameters['t spar'][designindex]* c(x) ,0, SEMISPAN)
+    weight+=spar*(k1+k2)
+    print(f'(di={designindex})The weight of stringers and spars is {weight*rho}')
+
+    #the Vol of skin (web)
+    #for each thickness u integrate  S^{y2}_{y1} (s * t)dy
+    #assume s = k * c
+    topderivative = airfoilfunc_top.derivative()
+    bottomderivative = airfoilfunc_bottom.derivative()
+    k1, errorg = sp.integrate.quad(lambda x: (1+topderivative(x)**2)**0.5 ,designparameters['front spar x'][designindex], designparameters['back spar x'][designindex])
+    k2, errorg = sp.integrate.quad(lambda x: (1+bottomderivative(x)**2)**0.5 ,designparameters['front spar x'][designindex], designparameters['back spar x'][designindex])
+    for i in range(len(designparameters['t web'][designindex])-1):
+        skin, errorg = sp.integrate.quad(lambda x: designparameters['t web'][designindex][i]* c(x) ,designproperties['span list web'][designindex][i] , designproperties['span list web'][designindex][i+1])
+        weight+=skin*(k1+k2)
+    #return Sum of Vols * rho
+    return weight*rho
 
 if __name__ == '__main__':
     #-----------------------------Plot winwbox unit chord---------------------------------------
@@ -235,8 +266,11 @@ if __name__ == '__main__':
         axs[designindex].axhline(centroid(1, designindex), color = 'g')
         axs[designindex].axis('equal')
 
+        print(f'(di={designindex}) The weight of design for one wing is {mass(designindex)} kg')
+
 
     plt.show()
+
 
 #-------------------------------------------------------------------------------------------------
 

@@ -87,18 +87,18 @@ airfoilfunc_bottom = sp.interpolate.InterpolatedUnivariateSpline(
                 [airfoil_data_bottom[i+1] for i in np.arange(0, len(airfoil_data_bottom), 2)]
                 )
 
-designparameters = {'area stringer': [4*10**-4, 4*10**-4, 2.8*10**-4], 
-                    't spar': [0.03, 0.035, 0.03], 
-                    't web': [[0.023, 0.019, 0.015, 0.012, 0.008, 0.008], # Last number not considered so only indexes [:-1]
-                              [0.021, 0.017, 0.013, 0.010, 0.010],
-                              [0.023, 0.019, 0.015, 0.012, 0.008, 0.008]], 
-                    't stringers': [0.004, 0.005, 0.003],
-                    'front spar x': [0.25, 0.30, 0.25], 
+designparameters = {'area stringer': [8*10**-4, 5*10**-4, 1*10**-3], 
+                    't spar': [0.04, 0.05, 0.05], 
+                    't web': [[0.006, 0.005, 0.0045, 0.0040, 0.0040], # Last number not considered so only indexes [:-1]
+                              [0.006, 0.005, 0.0045, 0.0040, 0.0040],
+                              [0.005, 0.004, 0.0035, 0.0025, 0.0025]], 
+                    't stringers': [0.005, 0.003, 0.008],
+                    'front spar x': [0.25, 0.25, 0.25], 
                     'back spar x': [0.67, 0.67, 0.67], 
-                    'list stringers': [[30, 24, 18, 12, 6, 0],
-                                       [30, 24, 18, 12, 6, 0],
-                                       [40, 32, 24, 16, 8, 0]],
-                    'rib spacing': [0.85, 0.65, 0.75]
+                    'list stringers': [[16, 10, 6, 0],
+                                       [18, 12, 6, 0],
+                                       [24, 20, 16, 12, 8]],
+                    'rib spacing': [0.9, 0.9, 0.85]
               }
 
 designproperties = {'span list stringers': [],
@@ -145,6 +145,16 @@ if __name__ == '__main__':
         axs.plot(spanplotlist, [n_stringers(x, i) for x in spanplotlist], label = f'Design {i+1}', alpha = 0.6)
     
     axs.set_ylabel("Number of Stringers [-]")
+    axs.set_xlabel("Span [m]")
+    plt.legend()
+    plt.show()
+
+    fig, axs = plt.subplots()
+    fig.suptitle('Skin Thickness')
+    for i in [0, 1, 2]:
+        axs.plot(spanplotlist, [tweb(x, i) for x in spanplotlist], label = f'Design {i+1}', alpha = 0.6)
+    
+    axs.set_ylabel("Skin Thickness [m]")
     axs.set_xlabel("Span [m]")
     plt.legend()
     plt.show()

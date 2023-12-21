@@ -1,7 +1,7 @@
 # Maximum allowable stress as a function of span
 # Web, Skin, Column, Global Buckling
 import numpy as np
-from data import design, C_R, c, SEMISPAN, E, tweb
+from data import design, C_R, c, SEMISPAN, E, tweb, n_stringers
 from stress import stress, max_stress_stringer
 import matplotlib.pyplot as plt
 from functools import cache
@@ -9,7 +9,7 @@ from functools import cache
 @cache
 def skinmaxstress(y, designindex, safetyfactor = 1):
     chord = c(y)
-    spardist = design['spar distance x'][designindex] * chord
+    spardist = design['spar distance x'][designindex] * chord / (n_stringers(y, designindex)/2)
 
     b = spardist
     

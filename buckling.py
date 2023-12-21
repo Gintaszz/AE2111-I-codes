@@ -4,7 +4,9 @@ import numpy as np
 from data import design, C_R, c, SEMISPAN, E, tweb
 from stress import stress, max_stress_stringer
 import matplotlib.pyplot as plt
+from functools import cache
 
+@cache
 def skinmaxstress(y, designindex, safetyfactor = 1):
     chord = c(y)
     spardist = design['spar distance x'][designindex] * chord
@@ -28,7 +30,7 @@ def columnmaxstress(y, designindex, safetyfactor = 1):
     A = design['area stringer'][designindex]
     b = (A + t**2) / (2 * t)
 
-    ybar = (b**2+b*t-t**2)/(4*b-2*t)
+    ybar = 0
     
     I_stringer = 1/12 * b**3 * t + (b/2-ybar)**2*b*t +\
              1/12 * t**3 * (b-t) + (t/2-ybar)**2*(b-t)*t
@@ -70,11 +72,14 @@ if __name__ == "__main__":
             else:
                 print(f"\033[92mSuccess: {mode} buckling \033[0m: {min(modelist)}")
             
-            plt.plot(spanarray, modelist)
+            plt.plot(spanarray, modelist, label = f'{mode} buckling')
         
         plt.axhline(1.5, color = 'r', linestyle = ':', label = 'Limit')
         plt.yscale("log")
-        plt.ylim(10**-2, 10**4)
+        plt.ylim(0.5, 10**3)
+        plt.ylabel('Margin of Safety [-]', fontsize=16)
+        plt.xlabel('Span [m]', fontsize=16)
+        plt.legend()
         plt.grid()
     
         plt.show()

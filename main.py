@@ -116,12 +116,13 @@ def J(x, designindex): #Torsional constant calculation = (4tA^2)/s
     areatotal = (front_spar_length + back_spar_length) * web_length / 2
 
     torsionalconst = (4 * areatotal**2)/(front_spar_length/t_spar + back_spar_length/t_spar + 2*web_length/t_web)
+
     return torsionalconst
 
 
 if __name__ == "__main__":
     
-    DESIGNNUM = 0
+    DESIGNNUM = 2
     #-----------------------Integration-------------------------
     stepsint = 100
 
@@ -218,30 +219,31 @@ if __name__ == "__main__":
     '''
 
     #------------Plot 4 graphs for chosen design------------------
+    plt.suptitle(f'Design {DESIGNNUM + 1}', fontsize=16)
 
     plt.subplot(221)
     plt.plot(np.arange(0, SEMISPAN, plottingres), [(i*np.sin(DIHEDRAL)) for i in np.arange(0, SEMISPAN, plottingres)], color = 'g')
     plt.plot(np.arange(0, SEMISPAN, plottingres), [(v(i) + i*np.sin(DIHEDRAL)) for i in np.arange(0, SEMISPAN, plottingres)])
     plt.axhline(y = 0.15 * SPAN + SEMISPAN * np.sin(DIHEDRAL), color = 'r', linestyle = 'dashed')
-    plt.ylabel("Front Profile of wing")
+    plt.ylabel("Deflection [m]", fontsize=16)
     plt.ylim(-0.2, max(0.15 * SPAN + SEMISPAN * np.sin(DIHEDRAL), deflection + SEMISPAN*np.sin(DIHEDRAL)) + 0.2)
-    plt.xlabel("Span [m]")
+    plt.xlabel("Span [m]", fontsize=16)
 
     plt.subplot(222)
     plt.plot(np.arange(0, SEMISPAN, plottingres), [phi(i) for i in np.arange(0, SEMISPAN, plottingres)])
     plt.axhline(y = -10 * np.pi/180, color = 'r', linestyle = 'dashed')
-    plt.ylabel("Torsion angle [rad]")
-    plt.xlabel("Span [m]")
+    plt.ylabel("Torsion angle [rad]", fontsize=16)
+    plt.xlabel("Span [m]", fontsize=16)
 
     plt.subplot(223)
     plt.plot(np.arange(0, SEMISPAN, plottingres), [I(i, designindex=DESIGNNUM) for i in np.arange(0, SEMISPAN, plottingres)])
-    plt.ylabel("MOI")
-    plt.xlabel("Span [m]")
+    plt.ylabel("MOI [$m^4$]", fontsize=16)
+    plt.xlabel("Span [m]", fontsize=16)
 
     plt.subplot(224)
     plt.plot(np.arange(0, SEMISPAN, plottingres), [J(i, designindex=DESIGNNUM) for i in np.arange(0, SEMISPAN, plottingres)])
-    plt.ylabel("Torsional constant")
-    plt.xlabel("Span [m]")
+    plt.ylabel("Torsional constant [$m^4$]", fontsize=16)
+    plt.xlabel("Span [m]", fontsize=16)
 
     plt.subplots_adjust(hspace=0.3)
     plt.show()
